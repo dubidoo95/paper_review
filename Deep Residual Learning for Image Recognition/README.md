@@ -8,6 +8,27 @@ convolutional neural networks의 깊이는 매우 중요하고 깊은 networks�
 
 # 2. Related Work
 
+VLAD와 VLAD를 확률적 표현으로 만든 Fisher Vector 모두 image recognition에서 좋은 성능을 보이는 residual representations다. vector quantization의 경우엔 residual vectors를 encoding하는 것이 original vectors를 encoding하는 것보다 효과적인 모습을 보인다. <br>
+low-level vision과 computer graphics에서 Partial Differential Equations(PDE)를 풀 때 Multigrid methods를 많이 사용한다. Multigirid methods란 system을 여러 개의 하위 문제로 재구성하여 문제를 해결하는 방식이다. Multigrid의 대안은 두 scales간의 residual vectors를 나타내는 변수에 의존하는 계층 기반 pre-conditioning으로, 이는 standard solvers보다 훨씬 빨리 수렴한다는 장점이 있다. 이 방식은 좋은 reformulation 혹은 preconditioning이 optimization을 단순화시킬 수 있음을 입증한다.<br><br>
+Shortcut connections의 초기 연구는 network의 input에서 output으로 연결된 linear layer를 하나 추가하는 것이었다. 이후 몇개의 intermediate layers가 vanishing/exploding gradients를 해결하기 위해 auxiliary classifiers에 직접 연결되었고 다른 논문들에서는 layer responses, gradients, propagated errors를 centoring하기 위해 shortcut connections를 활용하였다. <br>
+"highway networks"는 gating functions가 있는 shortcut connections를 제공한다. 이 gates는 data 의존적이고 parameters를 가지고 있다. gated shortcut이 닫혔을 때 highway networks는 non-residual functions를 가진다. 반면 우리가 사용한 shortcut connections는 parameter-free이고 shortcut이 닫히지 않아 항상 residual functions를 가진다. 모든 정보는 항상 통과하고 residual functions는 학습된다. 더불어 highway networks는 100개 이상의 layers를 가진, extremely increased depth에서도 accuracy를 올려준다는 것이 입증되지 않았다.
+
 # 3. Deep Residual Learning
 
+# 3.1. Residual Learning
+
+
+
+# 3.2. Identity Mapping by Shortcuts
+
+# 3.3. Network Architectures
+
+# 3.4. Implementation
+
 # 4. Experiments
+
+# 4.1. ImageNet Classification
+
+# 4.2. CIFAR-10 and Analysis
+
+# 4.3. Object Detection and PASCAL and MS COCO
