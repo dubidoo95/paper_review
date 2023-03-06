@@ -17,9 +17,16 @@ Shortcut connections의 초기 연구는 network의 input에서 output으로 연
 
 # 3.1. Residual Learning
 
-
+$H(x)$는 이들 layers 중 첫 번 layer에 대한 입력을 나타내는 x와 함께 몇 개의 stacked layers에 적합한 underlying mapping이다. 만약 multiple nonlinear layers가 complicated functions를 점근적으로 근사할 수 있다면 그것은 residual function, $H(x) - x$를 점근적으로 근사할 수 있는 것과 같다. 따라서 stacked layers를 $H(x)$로 근사하기보다 $F(x): H(x) - x$를 근사하고, original function은 $F(x) + x$가 된다. deeper model이 shallower counterpart보다 training이 높았던 문제가 multiple nonlinear layers를 근사하기 어렵기 때문이었는데 이 residual learning reformation을 이용해 단순히 multiple nonlinear layers의 weights를 0으로 유도하여 identity mappings에 접근할 수 있다.
 
 # 3.2. Identity Mapping by Shortcuts
+
+본 논문에서는 building block을 다음과 같이 정의한다.
+$$y = F(x, {W_i}) + x$$
+여기서 $x$와 $y$는 각각 input, output vectors를 나타내며 $F(x, {W_i})$는 residual mapping을 뜻한다. activation function으로는 ReLU를 사용하고 단순화하기 위해 bias를 생략한다. shortcut connection과 element-wise addition이 $F + x$ 연산을 수행하고 이후 second nonlinearity를 더한다.<br>
+위 공식은 추가 parameters도 없고 계산이 복잡하지도 않다. 이는 실용적이며 plain networks와 residual networks의 비교를 가능하게 만들었다. 본 논문에서는 parameters, depth, width, computational cost를 동일하게 통제하고 plain/residual networks를 비교하였다. <br>
+$x$와 $F$의 차원은 같아야하는데 만약 다를 때엔 linear projection $W_s$을 이용함으로써 두 차원을 동일하게 맞출 수 있다.
+$$y = F(x, {W_i}) + W_sx$$
 
 # 3.3. Network Architectures
 
