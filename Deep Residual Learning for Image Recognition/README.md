@@ -29,8 +29,14 @@ $x$와 $F$의 차원은 같아야하는데 만약 다를 때엔 linear projectio
 $$y = F(x, {W_i}) + W_sx$$
 
 # 3.3. Network Architectures
+본 논문에서는 plain networks와 residual networks를 각각 여러개 만들어서 그 성능을 비교하였다. <br>
+![image](https://user-images.githubusercontent.com/110075956/223146322-56cb5e13-5317-4244-a65d-a6f326f73b97.png)<br>
+plain networks는 Fig.3의 중간과 같은 모습으로 VGG networks와 유사한 모습으로 구현하였다. convolutional layers는 대부분 $3\times3$ filters를 사용하였다. 같은 output feature map size를 갖는 layers는 같은 수의 filters를 가지며, layer당 time complexity를 유지하기 위해 map size가 절반으로 줄어들 때 filters의 수는 두 배로 증가시켰다. <br>
+residual networks는 위의 plain networks를 기반으로 shortcut connections을 추가한 것이다. input과 output의 차원이 같으면 identity shortcut을 사용하고 차원이 달라질 때는 두 가지 옵션을 고려했는데, shortcut이 identity mapping을 수행할 때는 zero로 padding했고 그 외엔 Eqn.2의 방법을 사용하였다.
 
 # 3.4. Implementation
+
+ImageNet에 대한 구현은 다른 논문에서 사용된 방식을 따랐다. scale augmentation, crop, horizontal flip, standard color augmentation 등이 사용되었다. 각 convolution과 activation 사이엔 batch normalization을 넣었다. optimizer로는 256 mini-batch size의 SGD를 사용하였고 learning rate는 0.1부터 시작하여 error가 발생할 때마다 10으로 나누었다. models는 $60 \times 104$ iterations만큼 학습되었고 weight decay는 0.0001, momentum은 0.9로 설정하였다. dropout은 사용하지 않았다. 
 
 # 4. Experiments
 
