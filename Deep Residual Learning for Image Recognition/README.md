@@ -53,7 +53,7 @@ plain nets의 경우 더 깊은 34-layer nets가 18-layer nets보다 더 높은 
 ![image](https://user-images.githubusercontent.com/110075956/223383053-ab8c29ae-df15-49a4-8dfe-6fc509c44f90.png)<br>
 더 깊은 layers는 "bottleneck"으로 block을 만들었다. Figure 5의 오른쪽 그림처럼 $1 \times 1$, $3 \times 3$, $1 \times 1$ convolutions로 구성되어 있으며 $1 \times 1$ layers는 dimensions를 줄이고 늘리는 역할을 한다. <br>
 Table 4에서 보이는 것처럼 50/101/152-layer ResNets 모두 34-layer보다 유의미한 차이로 더 높은 정확도를 보였다. degradation problem이 보이지 않았고 모든 평가 지표에 대해 depth의 이점을 가졌다.<br><br>
-![image](https://user-images.githubusercontent.com/110075956/223396552-e0182aad-4068-447f-9a21-a1b23e5170f9.png)
+![image](https://user-images.githubusercontent.com/110075956/223396552-e0182aad-4068-447f-9a21-a1b23e5170f9.png)<br>
 152-layer ResNet의 single-model top-5 validaton error는 4.49%를 기록하였고 6개의 서로 다른 depth를 가진 모델을 결합한 networks의 top-5 error는 3.57%를 기록하였다.
 
 
