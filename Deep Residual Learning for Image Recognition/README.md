@@ -59,4 +59,17 @@ Table 4에서 보이는 것처럼 50/101/152-layer ResNets 모두 34-layer보다
 
 # 4.2. CIFAR-10 and Analysis
 
+다음으로 CIFAR-10 dataset에 대한 연구를 진행하였다. CIFAR-10은 $32 \times 32$의 50k training images와 10k testing images로 구성된 dataset이다. 여기서는 $3 \times 3$ convolutions 이후 {32, 16, 8} feature map sizes 각각 $3 \times 3$의 2$n$ layers {16, 32, 64} channels로 networks를 구성하였다. <br>
+![image](https://user-images.githubusercontent.com/110075956/224020237-2467c45f-73bb-44ba-9f70-0a7ed457ca93.png)<br>
+weight decay 0.0001, momentum 0.9와 weight initialization, BN을 사용하고 dropout은 사용하지 않았다. learning rate 0.1로 설정하고 32k와 48k iterations에서 10으로 나누고 총 64k iterations 동안 학습을 진행하였다. <br><br>
+![image](https://user-images.githubusercontent.com/110075956/224021216-17fcc914-d2d8-4d20-a842-e7ef388fd818.png)<br>
+![image](https://user-images.githubusercontent.com/110075956/224022074-abba985c-5688-49fc-89de-f3c65cef3db0.png)<br>
+Fig. 6의 왼쪽은 ImageNet에서 보았던 것처럼 plain networks로 nets가 깊어질 때 train error가 증가하는 모습을 보였다. Fig. 6의 가운데는 ResNet을 사용한 것으로 Fig. 4와 유사하게 optimization difficulty를 극복한 모습을 보였다. 110-layer ResNet의 경우 학습 초기의 learning rate를 0.01로 낮췄고 잘 수렴하는 모습을 보였다. <br><br>
+![image](https://user-images.githubusercontent.com/110075956/224022213-06353e71-7f1d-4c70-9d2f-91a66ff4ba9a.png)<br>
+Fig. 7을 보면 ResNet이 plain counterparts보다 표준편차가 낮게 나옴을 볼 수 있는데, 이는 basic motivation이 non-residual function보다 residual function에서 0에 더 가깝다는 것을 입증한다.<br><br>
+n을 200으로 설정하여 1202-layer network를 만들었고 이 모델 또한 optimization difficulty를 겪지 않았다. 하지만 이는 110-layer network보다는 성능이 떨어졌는데, 아마 overfitting에 기인한 문제로 보인다. 
+
 # 4.3. Object Detection and PASCAL and MS COCO
+
+![image](https://user-images.githubusercontent.com/110075956/224089202-9115d85a-4d46-428c-b5fb-20e2436f0838.png)<br>
+ResNet을 object detection tasks에도 적용시켜 보았고, 좋은 성능을 보였다. 이 외에도 ImageNet detection, ImageNet localization, COCO detection, COCO segmentation 등에서 1등을 거머쥐었다.
