@@ -13,6 +13,10 @@ MobileNets은 Inception models에서 처음 도입되고 사용된 depthwise sep
 
 # 3.1. Depthwise Separable Convolution
 
+Depthwise separable convolution은 standard convolution을 depthwise convolution과 $1\times1$ pointwise convolution으로 분해한 것을 말한다. MobileNet model은 이 depthwise separable convolution에 기반을 두고 있다. 우선 depthwise convolution은 각 input channels에 대해 하나의 filter를 적용한다. 이후 pointwise convolution이 depthwise convolution의 outputs을 합하는 구조이다. standard convolution을 두 개의 layers로 나눈 형태로 연산량과 model size의 극적인 감소를 보인다고 한다. <br>
+![image](https://user-images.githubusercontent.com/110075956/224698771-b1bd3a12-7039-44ef-be44-c08c96069544.png)<br>
+standard convolution의 computational cost는 $D_K \cdot D_K \cdot M \cdot N \cdot D_F \cdot D_F$이고 depthwise convolution의 computational cost는 $D_K \cdot D_K \cdot M \cdot D_F \cdot D_F$, pointwise convolution의 경우엔 $M \cdot N \cdot D_F \cdot D_F$이다. 따라서 standard convolution과 depthwise separable convolution의 computational cost를 비교해보면, $\frac{D_K \cdot D_K \cdot M \cdot D_F \cdot D_F + M \cdot N \cdot D_F \cdot D_F}{D_K \cdot D_K \cdot M \cdot N \cdot D_F \cdot D_F}$ = $\frac{1}{N} + \frac{1}{D^2_K}$가 된다. 따라서 depthwise separable convolution의 연산량은 standard convolution의 약 1/8~1/9라도 한다.
+
 # 3.2. Network Structure and Training
 
 # 3.3. Width Multiplier: Thinner Models
