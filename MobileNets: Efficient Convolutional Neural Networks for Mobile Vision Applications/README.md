@@ -34,7 +34,7 @@ optimizer로는 RMSprop을 사용하였고 모델이 작아 overfitting의 위�
 # 3.4. Resolution Multiplier: Reduced Representation
 
 computational cost를 줄이기 위한 방법으로 resolution multiplier $\rho$를 도입하였다. 이는 이를 input image에 적용하면 depthwise separable convolutions의 computational cost는 다음과 같아진다.
-$$$D_K \cdot D_K \cdot \alpha M \cdot \rho D_F \cdot \rho D_F + \alpha M \cdot \alpha N \cdot \rho D_F \cdot \rho D_F$$
+$$D_K \cdot D_K \cdot \alpha M \cdot \rho D_F \cdot \rho D_F + \alpha M \cdot \alpha N \cdot \rho D_F \cdot \rho D_F$$
 $\rho$의 값은 (0,1]사이로 일반적으로 input resolution이 224, 192, 160, 128이 되도록 조절하고 resolution multiplier는 computational cost를 $\rho ^2$만큼 낮추는 효과가 있다. 일련의 기법들을 적용하면 computational cost와 parameters의 수는 다음과 같이 감소한다.<br>
 ![image](https://user-images.githubusercontent.com/110075956/224956972-37f504cf-2bed-465c-acfa-27b824e7bf4f.png)
 
