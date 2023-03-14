@@ -29,9 +29,14 @@ optimizer로는 RMSprop을 사용하였고 모델이 작아 overfitting의 위�
 
 # 3.3. Width Multiplier: Thinner Models
 
-이미 작고 가벼운 모델을 더 작고 빠르게 만들기 위해 width multiplier를 도입하였다. width multiplier는 각 layer를 균일하게 얆게 만드는 것으로, input channels $N$과 output channels $M$은 각각 $\alpha N$, $\alpha M$이 되고, depthwise seperable convolution의 computational cost는 $$D_K \cdot D_K \cdot \alpha M \cdot D_F \cdot D_F + \alpha M \cdot \alpha N \cdot D_F \cdot D_F$$가 된다. $\alpha$는 일반적으로 0.25, 0.5, 0.75, 1.0을 사용하며 $\alpha = 1$일 때 baseline MobileNet이고 $\alpha < 1$일 때 reduced MobileNet이다. width multiplier는 computational cost와 parameters의 수를 $\alpha ^2$만큼 줄이는 효과가 있다.
+이미 작고 가벼운 모델을 더 작고 빠르게 만들기 위해 width multiplier를 도입하였다. width multiplier는 각 layer를 균일하게 얆게 만드는 것으로, input channels $N$과 output channels $M$은 각각 $\alpha N$, $\alpha M$이 되고, depthwise seperable convolution의 computational cost는 $$D_K \cdot D_K \cdot \alpha M \cdot D_F \cdot D_F + \alpha M \cdot \alpha N \cdot D_F \cdot D_F$$가 된다. $\alpha$의 값은 (0,1]사이로 일반적으로 0.25, 0.5, 0.75, 1.0을 사용하며 $\alpha = 1$일 때 baseline MobileNet이고 $\alpha < 1$일 때 reduced MobileNet이다. width multiplier는 computational cost와 parameters의 수를 $\alpha ^2$만큼 줄이는 효과가 있다.
 
 # 3.4. Resolution Multiplier: Reduced Representation
+
+computational cost를 줄이기 위한 방법으로 resolution multiplier $\rho$를 도입하였다. 이는 이를 input image에 적용하면 depthwise separable convolutions의 computational cost는 다음과 같아진다.
+$$$D_K \cdot D_K \cdot \alpha M \cdot \rho D_F \cdot \rho D_F + \alpha M \cdot \alpha N \cdot \rho D_F \cdot \rho D_F$$
+$\rho$의 값은 (0,1]사이로 일반적으로 input resolution이 224, 192, 160, 128이 되도록 조절하고 resolution multiplier는 computational cost를 $\rho ^2$만큼 낮추는 효과가 있다. 일련의 기법들을 적용하면 computational cost와 parameters의 수는 다음과 같이 감소한다.<br>
+![image](https://user-images.githubusercontent.com/110075956/224956972-37f504cf-2bed-465c-acfa-27b824e7bf4f.png)
 
 # 4. Experiments
 
