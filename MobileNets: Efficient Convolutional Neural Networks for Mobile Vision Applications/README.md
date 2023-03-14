@@ -40,13 +40,38 @@ $\rho$의 값은 (0,1]사이로 일반적으로 input resolution이 224, 192, 16
 
 # 4. Experiments
 
+이번 장에선 먼저 depthwise convolutions의 효과를 보았다. 이후 width multiplier와 resolution multiplier의 효과를 보았다. 마지막으로 다양한 tasks에 MobileNet을 적용시키고 결과를 확인하였다.
+
 # 4.1. Model Choices
+
+![image](https://user-images.githubusercontent.com/110075956/225021945-71cb0992-71b4-4a3c-a2cd-57f1fd33091d.png)<br>
+full convolutions 대신 depthwise seperable convolutions를 쓴 모델의 정확도는 약 1% 정도 감소하였고 mult-adds와 parameters는 대폭 감소하였다. <br><br>
+![image](https://user-images.githubusercontent.com/110075956/225022164-fd9ca8ba-e156-4ed3-a149-79d4a1f093ca.png)<br>
+$14 \times 14 \times 512$의 5개 layers를 제거한 모델은 비슷한 computation cost와 parameters를 가지고 있으면서도 3% 더 얇게 만들었다.
 
 # 4.2. Model Shrinking Hyperparameters
 
+![image](https://user-images.githubusercontent.com/110075956/225022646-bc3086ff-14f0-437c-994f-e7a8f951675f.png)<br>
+width multiplier가 작아짐에 따라 accuracy가 서서히 줄어들고 $\alpha = 0.25$일 때 확 낮아짐을 볼 수 있다.<br><br>
+![image](https://user-images.githubusercontent.com/110075956/225028317-b78b70f6-ec0f-4a42-9e74-52a9cfa8c217.png)<br>
+resolution Multiplier가 작아짐에 따라 accuracy가 서서히 줄어드는 것을 볼 수 있다.<br><br>
+![image](https://user-images.githubusercontent.com/110075956/225030221-5f5db51b-31b9-4f20-83c0-c48860192a70.png)<br>
+Figure 4는 width multiplier $\alpha in {1, 0.75, 0.5, 0.25}$, resolution $in {224, 192, 160, 128}$일 때 accuracy와 computation 간의 trade-off를 보여주는 그래프이다. 전반적으로 log-linear 형태를 띤다.<br><br>
+![image](https://user-images.githubusercontent.com/110075956/225031895-b102a2c4-6d28-4a18-bfb9-48df2840ee9f.png)<br>
+Figure 5는 위 조건에서 accuracy와 parameters 수의 trade-off를 보여주는 그래프이다. <br><br>
+![image](https://user-images.githubusercontent.com/110075956/225037633-e54953f4-1748-4d60-b62f-dbe0b86d0ff6.png)<br>
+MobileNet은 VGG16보다 무려 32배 작고 27배 계산을 덜 하였다. GoogleNet과 정확도가 비슷하지만 GoogleNet보다 작고 계산을 덜 하였다.<br><br>
+![image](https://user-images.githubusercontent.com/110075956/225038275-4b747697-8ac1-4ebf-8272-6d6831c97602.png)<br>
+width multiplier $\alpha = 0.5$로 설정하고 resolution을 $160 \times 160$으로 줄였을 때 Squeezenet과 AlexNet보다 훨씬 작고 가벼웠지만 오히려 정확도가 더 높은 모습을 보였다.
+
 # 4.3. Fine Grained Recognition
 
+![image](https://user-images.githubusercontent.com/110075956/225044210-bbfd0d9f-54cd-4325-9866-edfef8117dca.png)<br>
+noisy web data를 이용해 pretrain하고 Stanford Dogs dataset으로 fine grained recognition을 학습시켰다. computation과 size를 상당히 감소시키고도 state of art에 근접하는 성능을 보였다.
+
 # 4.4. Large Scale Geolocalizaion
+
+PlaNet은 해당 사진이 지구 어디서 찍혔는지를 분류하는 model이다. 본 논문에서는 MobileNet architecture를 이용해 PlaNet을 re-train하였고 parameters의 수는 약 $\frac{1}{4}$, mult-adds는 약 $\frac{1}{10}$ 감소시키면서도 정확도 측면에선 아주 약간의 감소만 있었다. 더불어 비슷한 tasks를 수행하는 Im2GPS에 비해서는 월등한 성능을 보였다.
 
 # 4.5. Face Attributes
 
