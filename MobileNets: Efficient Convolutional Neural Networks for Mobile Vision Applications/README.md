@@ -15,7 +15,7 @@ MobileNets은 Inception models에서 처음 도입되고 사용된 depthwise sep
 
 Depthwise separable convolution은 standard convolution을 depthwise convolution과 $1\times1$ pointwise convolution으로 분해한 것을 말한다. MobileNet model은 이 depthwise separable convolution에 기반을 두고 있다. 우선 depthwise convolution은 각 input channels에 대해 하나의 filter를 적용한다. 이후 pointwise convolution이 depthwise convolution의 outputs을 합하는 구조이다. standard convolution을 두 개의 layers로 나눈 형태로 연산량과 model size의 극적인 감소를 보인다고 한다. <br>
 ![image](https://user-images.githubusercontent.com/110075956/224698771-b1bd3a12-7039-44ef-be44-c08c96069544.png)<br>
-standard convolution의 computational cost는 $D_K \cdot D_K \cdot M \cdot N \cdot D_F \cdot D_F$이고 depthwise convolution의 computational cost는 $D_K \cdot D_K \cdot M \cdot D_F \cdot D_F$, pointwise convolution의 경우엔 $M \cdot N \cdot D_F \cdot D_F$이다. 따라서 standard convolution과 depthwise separable convolution의 computational cost를 비교해보면, $\frac{D_K \cdot D_K \cdot M \cdot D_F \cdot D_F + M \cdot N \cdot D_F \cdot D_F}{D_K \cdot D_K \cdot M \cdot N \cdot D_F \cdot D_F}$ = $\frac{1}{N} + \frac{1}{D^2_K}$가 된다. 따라서 depthwise separable convolution의 연산량은 standard convolution의 약 1/8~1/9라고 한다.
+standard convolution의 computational cost는 $D_K \cdot D_K \cdot M \cdot N \cdot D_F \cdot D_F$이고 depthwise convolution의 computational cost는 $D_K \cdot D_K \cdot M \cdot D_F \cdot D_F$, pointwise convolution의 경우엔 $M \cdot N \cdot D_F \cdot D_F$이다. 따라서 standard convolution과 depthwise separable convolution의 computational cost를 비교해보면, $\frac{D_K \cdot D_K \cdot M \cdot D_F \cdot D_F + M \cdot N \cdot D_F \cdot D_F}{D_K \cdot D_K \cdot M \cdot N \cdot D_F \cdot D_F}$ = $\frac{1}{N} + \frac{1}{D^2_K}$가 된다. 따라서 depthwise separable convolution의 연산량은 standard convolution의 약 $\frac{1}{8} \sim \frac{1}{9}$라고 한다.
 
 # 3.2. Network Structure and Training
 
@@ -56,7 +56,7 @@ width multiplier가 작아짐에 따라 accuracy가 서서히 줄어들고 $\alp
 ![image](https://user-images.githubusercontent.com/110075956/225028317-b78b70f6-ec0f-4a42-9e74-52a9cfa8c217.png)<br>
 resolution Multiplier가 작아짐에 따라 accuracy가 서서히 줄어드는 것을 볼 수 있다.<br><br>
 ![image](https://user-images.githubusercontent.com/110075956/225030221-5f5db51b-31b9-4f20-83c0-c48860192a70.png)<br>
-Figure 4는 width multiplier $\alpha in {1, 0.75, 0.5, 0.25}$, resolution $in {224, 192, 160, 128}$일 때 accuracy와 computation 간의 trade-off를 보여주는 그래프이다. 전반적으로 log-linear 형태를 띤다.<br><br>
+Figure 4는 width multiplier $\alpha \in {1, 0.75, 0.5, 0.25}$, resolution $\in {224, 192, 160, 128}$일 때 accuracy와 computation 간의 trade-off를 보여주는 그래프이다. 전반적으로 log-linear 형태를 띤다.<br><br>
 ![image](https://user-images.githubusercontent.com/110075956/225031895-b102a2c4-6d28-4a18-bfb9-48df2840ee9f.png)<br>
 Figure 5는 위 조건에서 accuracy와 parameters 수의 trade-off를 보여주는 그래프이다. <br><br>
 ![image](https://user-images.githubusercontent.com/110075956/225037633-e54953f4-1748-4d60-b62f-dbe0b86d0ff6.png)<br>
@@ -75,8 +75,19 @@ PlaNet은 해당 사진이 지구 어디서 찍혔는지를 분류하는 model�
 
 # 4.5. Face Attributes
 
+![image](https://user-images.githubusercontent.com/110075956/225273985-ab1e5333-2c09-45e3-b000-f5e2f733a3f1.png)<br>
+MobileNet architecture를 이용해 face attribute classifier를 만들었고 multi-attribute dataset으로 학습시켰다. MobileNet-based classifier는 기존의 모델과 비슷한 정확도를 가지면서도 Multi-Adds는 기존 모델과 비교해 단 1%만을 사용하였다.
+
 # 4.6. Object Detection
+
+![image](https://user-images.githubusercontent.com/110075956/225306777-86215d59-d3b8-4fc1-9c99-4da8ce97b50c.png)<br>
+Faster-RCNN과 SSD framework 하에서 MobileNet, VGG, Inception V2의 성능을 비교해보았다. 두 frameworks 모두 MobileNet은 훨씬 낮은 computational complexity와 model size를 가지고도 상당한 결과를 보여주었다.
 
 # 4.7. Face Embeddings
 
+![image](https://user-images.githubusercontent.com/110075956/225309087-09e7456f-56f7-4d4e-bfbc-078e53ebe24a.png)<br>
+FaceNet은 face recognition 분야에서 state of the art를 기록한 모델이다. mobile FaceNet을 만들기 위해 training data에서 FaceNet과 MobileNet의 output의 제곱차를 최소화하는 방향으로 훈련시켰다.
+
 # 5. Conclusion
+
+depthwise seperable convolutions라는 개념을 이용하여 MobileNet이라는 새로운 model architecture를 만들었다. width multiplier와 resolution multiplier를 이용하여 적당한 accuracy를 가지며 더 작고 빠른 모델을 만들 수 있음을 보였다. 유명한 다른 모델들과 비교하였을 때 MobileNet은 우월한 size와 speed를 가지고 있으며 accuracy 또한 경쟁력을 갖추었음을 알 수 있다.
