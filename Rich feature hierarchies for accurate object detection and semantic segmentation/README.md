@@ -15,7 +15,7 @@ image classification과 달리 object detection은 image 내 objects를 localizi
 
 R-CNN은 selective search를 사용하여 region proposals를 만든다.<br><br>
 만들어진 각 resion proposals로부터 4096차원의 feature vector를 추출하였고 이 features는 다섯 개의 convolutional layers와 두 개의 fully connected layers를 통해 $227 \times 227$의 평균 차감된 RGB images를 forward propagating 함으로써 계산된다. <br>
-가장 먼저 input image data를 CNN에서 쓸 size(여기서는 $227 \times 227$)로 변환한다. 많은 변환 가능한 임의의 모양을 가진 regions 중에서 가장 간단한 것을 선택한다. tight bounding box에 있는 모든 pixels를 필요한 size로 맞춘다. warping하기 전 주변 배경을 $p$ pixels(여기서는 $p=16$)만큼 남긴다.
+가장 먼저 input image data를 CNN에서 쓸 size(여기서는 $227 \times 227$)로 변환한다. 많은 변환 가능한 임의의 모양을 가진 regions 중에서 가장 간단한 것을 선택한다. tight bounding box에 있는 모든 pixels를 필요한 size로 맞춘다. warping하기 전 주변 배경을 $p$ pixels(여기서는 $p=16$)만큼 남긴다.<br>
 ![image](https://user-images.githubusercontent.com/110075956/226237133-4616d255-1a1c-470d-a8b9-0d6eaaf1eca6.png)
 
 # 2.2. Test-time Detection
