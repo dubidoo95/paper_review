@@ -45,7 +45,18 @@ R-CNN은 31.4%의 mAP를 기록하며 종전 가장 좋은 모델이었던 OverF
 
 # 3.1. Visualizing Learned Features
 
+첫번째 layer filters는 oriented edges와 opponent colors를 찾는다. 이후의 layers는 좀 복잡한데, 아이디어는 network에서 특정 unit을 선택하고 그 자체로 object detector인 것처럼 사용하는 것이다. 즉 region proposals에 대해 unit의 활성화를 계산하고, 그를 가장 높은 것부터 가장 낮은 것까지 정렬하고, non-maximum suppression을 수행한 다음 top-scoring regions를 표시한다. 이 방법은 선택된 unit이 "스스로 말할 수 있게" 한다.<br>
+visualize는 pool5 layer에서 수행하였다. network의 마지막 convolutional layer의 output을 max-pool하는 layer로, $6 \times 6 \times 256$ = 9216-dimesional이다. boundary effects를 무시하고 각 pool5 unit은 $227 \times 227$ input에 대해 $195 \times 195$의 receptive field를 갖는다.<br>
+![image](https://user-images.githubusercontent.com/110075956/226401564-3e257551-3387-41d1-8266-96e6c19f3607.png)<br>
+위 Figure 4를 보면 network는 소수의 class-tuned features를 모양, 질감, 색상 및 재료 특성들과 함께 학습하는 것으로 보인다. 다음의 fully connected layer는 이러한 풍부한 features의 대규모 집합을 구성할 수 있는 능력을 가지고 있다.
+
 # 3.2. Ablation Studies
+
+어느 layers가 detection performance에 가장 중요한지 알아보기 위해 여러 실험을 진행하였다. <br>
+![image](https://user-images.githubusercontent.com/110075956/226411871-2a0fba54-403e-4bb6-8c0b-4ddd04f408bd.png)<br>
+먼저 fine-tuning을 하지 않고 layer-by-layer performance를 분석하였다. Table 2의 1~3행이 그것으로, fc7의 features가 fc6의 features보다 덜 일반화하는 것을 볼 수 있다. 이는 CNN의 parameters의 29%인 약 1680만개의 parameters를 mAP를 떨어뜨리지 않고 제거할 수 있음을 뜻한다. 더 놀라운 것은 fc6과 fc7을 모두 제거한 것은 제거하기 전의 단 6%의 parameters만 사용하면서도 꽤 좋은 성능을 보였다는 것이다. 위 실험을 통해 CNN의 representational power는 convolutional layers에서 온다는 것을 알 수 있었다.<br><br>
+다음으로는 fine-tuning을 한 뒤 결과를 보았다. Table 2의 4~6행이 그것으로, fine-tuning은 mAP를 약 8.0%p 증가시킴을 보였다. 더불어 pool5보다 fc6와 fc7에서의 증가치가 훨씬 큰 것을 볼 수 있는데 이는 대부분의 향상이 domain-specific non-linear classifiers로부터 얻을 수 있음을 뜻한다.<br><br>
+
 
 # 3.3. Network Architectures
 
