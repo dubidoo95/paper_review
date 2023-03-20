@@ -5,7 +5,7 @@
 image classification과 달리 object detection은 image 내 objects를 localizing하는 것이 필요하다. 오랫동안 이를 위해 sliding-window detector를 사용하였다. 하지만 매우 큰 receptive fields와 strides를 가진 모델에 적용하기 어려웠고 "recognition using resions"라는 새로운 개념을 도입하였다.<br>
 ![image](https://user-images.githubusercontent.com/110075956/225571645-10500c83-5dd2-433a-88c3-5732f4070123.png)<br>
 본 논문에서 sliding-window를 사용한 OverFeat와 성능을 비교하였다. ILSVRC2013 detection dataset을 이용해 학습시켜본 결과 R-CNN이 OverFeat보다 약 7%p 더 높은 정확도를 보인 것으로 나타났다.<br>
-다음으로 마주한 문제는 object detection의 data가 매우 적어 CNN을 학습시키기 어렵다는 것이었다. 이 문제를 unsupervised pre-training으로 해결하였다. 먼저 대용량의 dataset(ILSVRC)을 이용해 supervised pre-train시켰고 작은 dataset(PASCAL)을 이용해 domain-specific 미세조정을 하였다. 이 미세조정은 mAP를 약 8%p 증가시켰다.
+다음으로 마주한 문제는 object detection의 data가 매우 적어 CNN을 학습시키기 어렵다는 것이었다. 이 문제를 unsupervised pre-training으로 해결하였다. 먼저 대용량의 dataset(ILSVRC)을 이용해 supervised pre-train시켰고 작은 dataset(PASCAL)을 이용해 domain-specific fine tuning을 하였다. 이 fine tuning은 mAP를 약 8%p 증가시켰다.
 
 # 2. Object Detection with R-CNN
 
@@ -13,17 +13,33 @@ image classification과 달리 object detection은 image 내 objects를 localizi
 
 # 2.1. Module Design
 
-R-CNN은 특정한 region proposal method에 구애받지 않지만 selective search를 사용하여 이전의 detection work와 통제된 비교를 가능하게 하였다.<br><br>
-각 resion proposal로부터 4096차원의 feature vector를 추출하였고 이 features는 다섯 개의 convolutional layers와 두 개의 fully connected layers를 통해 $227 \times 227$의 평균 차감된 RGB images를 forward propagating 함으로써 계산된다. <br>
-가장 먼저 input image data를 CNN에서 쓸 size(여기서는 $227 \times 227$)로 변환한다. 많은 변환 가능한 임의의 모양을 가진 regions 중에서 가장 간단한 것을 선택한다. tight bounding box에 있는 모든 pixels를 필요한 size로 맞춘다. 
+R-CNN은 selective search를 사용하여 region proposals를 만든다.<br><br>
+만들어진 각 resion proposals로부터 4096차원의 feature vector를 추출하였고 이 features는 다섯 개의 convolutional layers와 두 개의 fully connected layers를 통해 $227 \times 227$의 평균 차감된 RGB images를 forward propagating 함으로써 계산된다. <br>
+가장 먼저 input image data를 CNN에서 쓸 size(여기서는 $227 \times 227$)로 변환한다. 많은 변환 가능한 임의의 모양을 가진 regions 중에서 가장 간단한 것을 선택한다. tight bounding box에 있는 모든 pixels를 필요한 size로 맞춘다. warping하기 전 주변 배경을 $p$ pixels(여기서는 $p=16$)만큼 남긴다.
+![image](https://user-images.githubusercontent.com/110075956/226237133-4616d255-1a1c-470d-a8b9-0d6eaaf1eca6.png)
 
 # 2.2. Test-time Detection
 
+test 단계에서 selective search를 통해 2000개의 region proposals를 만들었다. 각 proposal을 warping하고 forward propagation을 통해 features를 계산하였다. 이들 features를 SVN을 이용해 각 class별 score를 계산하고 이를 토대로 greedy non-maximum suppression을 적용하였다. 그 과정에서 intersection-over-union(IoU)이 학습된 임계점을 넘는 영역은 제거하였다.<br><br>
+detection의 효율을 높이는 두 가지 특성이 있었다. 첫 번째는 모든 CNN parameters가 모든 categories를 공유하는 것이고 두 번째는 CNN으로 계산된 feature vectors들이 spatial paramids같은 다른 일반적인 approaches에 비해 low-demensional한 것이다. 그 결과 resion proposals와 features를 계산하는 데 걸리는 시간이 대폭 줄어들었다. 더불어 수천개의 classes, 심지어 100k classes까지도 별 다른 techniques 없이 확장이 가능했다.
+
 # 2.3. Training
+
+bounding-box labels data가 없었기때문에 image-level annotations만 사용하여 pre-train을 진행하였다. 그렇지만 이것만 가지고도 ILSVRC 2012에서 top-1 rate error를 기록하였는데 이는 training process의 간결함 덕분이었다.<br><br>
+이후 새로운 task에 적용시키기 위해 domain-specific fine tuning을 진행하였다. warped region proposals만 사용하였고 optimizer로는 stochastic gradient descent(SGD)를 사용하였다. 1000-way classification layer를 ($N + 1$)-way classification layer로 바꾼 것을 제외하고는 모델은 변경하지 않았다. 여기서 $N$은 object classes의 수를 의미하고 1은 background를 의미한다. 또한 0.5 IoU 이상의 region proposals를 positive로, 나머지를 negative로 간주하였다. learning rate는 0.001로 설정하였고, 각 SGD iteration 마다 32개의 positive windows와 96개의 background windows를 sample하여 128개의 mini-batch를 만들었다.<br><br>
+image region이 object를 완전히 감싸고 있을때는 positive로, image region에 아무것도 없을때는 negative로 판정하기 수월했지만 부분적으로 겹쳐있는 등 애매한 것들은 판정하기 어려웠다. 때문에 IoU overlap라는 개념을 도입하여, 특정 값 아래는 모두 negatives로 간주하였다. {0, 0.1, 0.2, 0.3, 0.4, 0.5} 범위 내에서 grid search해본 결과 overlab threshold가 0.3일때 가장 좋은 성능을 보였다. 앞서 fine tuning할 때는 threshold를 0.5로 설정하였었는데 fine tuning할 때와 training할 때 threshold를 같게 설정하면 오히려 성능이 떨어지는 결과를 보였다. 때문에 threshold를 각각 0.5, 0.3으로 설정하였다.<br><br>
+이후 feature를 추출하여 linear SVM을 훈련시켰다. 훈련할 때 training data가 너무 커서 memory가 넘치는 현상을 보였기 때문에 hard negative mining method를 이용하여 이 문제를 해결하였다.
 
 # 2.4. Results on PASCAL VOC 2010-12
 
+![image](https://user-images.githubusercontent.com/110075956/226296168-0da8c0d9-ee3a-43e1-ae6e-fab77352e536.png)<br>
+bounding-box regression을 사용한 것과 사용하지 않은 것을 각각 제출하였고 네 개의 다른 strong baselines인 DPM, UVA, Regionlets, SegDPM과 비교해보았다. 같은 region proposal algorithm을 사용한 UVA system과 비교해보았을때 월등한 성능을 보였고 다른 모델들과 비교해보았을 때도 가장 좋은 성능을 보였다. 
+
 # 2.5. Results on ILSVRC2013 Detection
+
+PASCAL VOC과 같은 system, 같은 hyperparameters를 사용하여 200개의 classes를 가진 ILSVRC2013 detection dataset에 실행시켜보았다. <br>
+![image](https://user-images.githubusercontent.com/110075956/226302359-08ecce86-1137-4f22-aedf-ae11b94cf1fa.png)<br>
+R-CNN은 31.4%의 mAP를 기록하며 종전 가장 좋은 모델이었던 OverFeat과 상당한 차이를 보였다. 
 
 # 3. Visualization, Ablation, and Modes of Error
 
