@@ -54,21 +54,40 @@ visualize는 pool5 layer에서 수행하였다. network의 마지막 convolution
 
 어느 layers가 detection performance에 가장 중요한지 알아보기 위해 여러 실험을 진행하였다. <br>
 ![image](https://user-images.githubusercontent.com/110075956/226411871-2a0fba54-403e-4bb6-8c0b-4ddd04f408bd.png)<br>
-먼저 fine-tuning을 하지 않고 layer-by-layer performance를 분석하였다. Table 2의 1~3행이 그것으로, fc7의 features가 fc6의 features보다 덜 일반화하는 것을 볼 수 있다. 이는 CNN의 parameters의 29%인 약 1680만개의 parameters를 mAP를 떨어뜨리지 않고 제거할 수 있음을 뜻한다. 더 놀라운 것은 fc6과 fc7을 모두 제거한 것은 제거하기 전의 단 6%의 parameters만 사용하면서도 꽤 좋은 성능을 보였다는 것이다. 위 실험을 통해 CNN의 representational power는 convolutional layers에서 온다는 것을 알 수 있었다.<br><br>
-다음으로는 fine-tuning을 한 뒤 결과를 보았다. Table 2의 4~6행이 그것으로, fine-tuning은 mAP를 약 8.0%p 증가시킴을 보였다. 더불어 pool5보다 fc6와 fc7에서의 증가치가 훨씬 큰 것을 볼 수 있는데 이는 대부분의 향상이 domain-specific non-linear classifiers로부터 얻을 수 있음을 뜻한다.<br><br>
-
+먼저 fine-tuning을 하지 않고 layer-by-layer performance를 분석하였다. Table 2의 1-3행이 그것으로, fc7의 features가 fc6의 features보다 덜 일반화하는 것을 볼 수 있다. 이는 CNN의 parameters의 29%인 약 1680만개의 parameters를 mAP를 떨어뜨리지 않고 제거할 수 있음을 뜻한다. 더 놀라운 것은 fc6과 fc7을 모두 제거한 것은 제거하기 전의 단 6%의 parameters만 사용하면서도 꽤 좋은 성능을 보였다는 것이다. 위 실험을 통해 CNN의 representational power는 convolutional layers에서 온다는 것을 알 수 있었다.<br><br>
+다음으로는 fine-tuning을 한 뒤 결과를 보았다. Table 2의 4-6행이 그것으로, fine-tuning은 mAP를 약 8.0%p 증가시킴을 보였다. 더불어 pool5보다 fc6와 fc7에서의 증가치가 훨씬 큰 것을 볼 수 있는데 이는 대부분의 향상이 domain-specific non-linear classifiers로부터 얻을 수 있음을 뜻한다.<br><br>
+다른 learning methods를 가진 세 개의 모델(Table 2의 8-10행)과 비교해보았을 때에도 R-CNN이 훨씬 뛰어난 성능을 보였다. 특히 가장 최근 모델인 DPM v5에 대해서는 약 60% 가량의 성능 향상을 입증하였다.
 
 # 3.3. Network Architectures
 
+![image](https://user-images.githubusercontent.com/110075956/226541457-cf746d59-738e-4242-99a4-1e8c28e68ad4.png)<br>
+지금까지는 대부분 CNN architecture로 AlexNet(T-Net)을 사용했는데 VGG16(O-Net)을 사용할 경우 mAP가 58.5%에서 66.0%로 상당히 많이 증가함을 볼 수 있다. 다만 VGG16을 사용할 시 AlexNet보다 계산 시간이 7배가량 더 걸린다는 단점이 있었다.
+
 # 3.4. Detection Error Analysis
+
+![image](https://user-images.githubusercontent.com/110075956/226543772-78d0b6f7-54f0-412e-a1ac-c6728f43bf23.png)<br>
+![image](https://user-images.githubusercontent.com/110075956/226543816-938785e2-af70-48d0-855b-6ef075ccbd87.png)<br>
+detection analysis tool을 이용해 R-CNN의 errors를 분석하였다. 
 
 # 3.5. Bounding-box Regression
 
+localization errors를 줄이기 위해 linear regression model이 새로운 detection window를 예측하도록 훈련시켰다. 이는 mAP를 3-4 points 정도 향상시키는 결과를 보였다.
+
 # 3.6. Qualitative Results
+
+![image](https://user-images.githubusercontent.com/110075956/226549854-1d4c3c65-9e97-43e8-adbf-42d2bd32aa90.png)<br>
+![image](https://user-images.githubusercontent.com/110075956/226549888-7003d56f-525c-4267-bc7a-18c3e2409045.png)<br>
+![image](https://user-images.githubusercontent.com/110075956/226549916-4dd4cc12-47de-482e-8152-f1b94181c951.png)<br>
+![image](https://user-images.githubusercontent.com/110075956/226549972-ea4c41a8-cf34-4272-b6b2-2493cd183925.png)<br>
+Figure 8과 Figure 9는 val set에서 무작위로 선별하여 나타내는 것이다. precision이 0.5를 넘는 모든 detections를 보여준다. 그리고 Figure 10과 Figure 11은 흥미롭고 놀라운 결과를 보여주는 몇 가지를 선별한 것이다. 여기도 마찬가지로 precision이 0.5를 넘는 모든 detections가 나타나있다.
 
 # 4. The ILSVRC2013 Detection Dataset
 
+ILSVRC 2013 detection dataset은 PASCAL VOC보다 덜 homogeneous하기 때문에 이를 어떻게 사용해야할지가 중요해서 별도의 section으로 다루었다.
+
 # 4.1. Dataset Overview
+
+train 395,918개, val 20,121개, test 40,152개로 이루어진 dataset이다. 
 
 # 4.2. Region Proposals
 
