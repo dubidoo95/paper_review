@@ -87,7 +87,8 @@ ILSVRC 2013 detection dataset은 PASCAL VOC보다 덜 homogeneous하기 때문�
 
 # 4.1. Dataset Overview
 
-train 395,918개, val 20,121개, test 40,152개로 이루어진 dataset이다. 
+train 395,918개, val 20,121개, test 40,152개로 이루어진 dataset이다. 이 images는 scene-like하고 PASCAL VOC images와 복잡도가 비슷하다. val과 test images는 bounding boxes와 함께 label이 모두 달려있다. 반면 train images는 복잡도가 다 다르고 label도 붙어있는 것이 있고 붙어있지 않는 것이 있다. 거기에 negative images도 있지만 본 논문에서는 사용하지 않았다. 그로 인해 train images에 hard negative mining을 적용하기 어렵다. <br>
+여기서 사용한 방식은 val set을 주로 사용하고 train set을 보조적인 positive examples로 사용하는 것이다. classes가 최대한 균일하게 분리되도록 val1과 val2로 나누었다. 
 
 # 4.2. Region Proposals
 
