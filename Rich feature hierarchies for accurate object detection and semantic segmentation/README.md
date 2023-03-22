@@ -114,4 +114,13 @@ R-CNN과 OverFeat 간에 흥미로운 관계가 하나 있었는데, 만약 sele
 
 # 5. Semantic Segmentation
 
+R-CNN을 PASCAL VOC segmentation challenge에도 적용해보았다. 현재 가장 성능이 좋은 O2P에서 사용한 CPMC를 도입하였다. 그리고 세 가지 전략을 평가하였다.<br>
+첫 번째 전략($full$)은 region의 모양을 무시하고 detection에서 했던 것처럼 CNN features를 직접 계산하는 것이었다. 두 번째 전략($fg$)은 region의 fore-ground mask에서만 CNN features를 계산하는 것이었다. 세 번째 전략($full+fg$)은 두 전략을 결합한 것이었다.<br>
+![image](https://user-images.githubusercontent.com/110075956/226986570-64c83278-3fd9-4ab5-9e92-653fca29253e.png)<br>
+세 전략을 비교해본 결과 두 번째 전략이 첫 번째 전략보다 약간 더 좋은 성능을 보였고 세 번째 전략은 월등한 성능을 보였다. 이는 $full$로부터 온 정보가 $fg$로부터 온 정보보다 훨씬 많은 정보를 담고 있음을 암시한다.<br>
+![image](https://user-images.githubusercontent.com/110075956/226987351-dae39ebb-a18c-4df8-aebe-f02c4b0f7124.png)<br>
+Table 6에서는 $full + fg$ R-CNN과 다른 두 개의 baselines을 비교해보았다. R-CNN은 21개의 항목 중 11개에서 가장 높은 정확도를 보이며 평균적으로 가장 좋은 성능을 보였다.
+
 # 6. Conclusion
+
+R-CNN은 기존의 object detection model보다 간단하고 확장 가능하면서도 30%의 성능 향상을 이끌어냈다. 두 가지 insights를 제시하였는데 첫 번째는 high-capacity convolutional neural networks를 bottom-up region proposals에 적용하여 objects를 localize와 segment하는 것이고 두 번째는 labeled training data가 부족할 때 CNN을 훈련시키는 패러다임이었다. network를 auxiliary task로 pre-train하고 target task로 fine-tune하는, "supervised pre-training/domain-specific fine-tuning" 패러다임이 데이터가 부족한 vision 문제에 매우 효과적일 것이라 추측하였다.
