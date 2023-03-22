@@ -92,13 +92,25 @@ train 395,918개, val 20,121개, test 40,152개로 이루어진 dataset이다. �
 
 # 4.2. Region Proposals
 
+PASCAL에서 사용한 것과 같은 방법의 region proposals를 사용하였다. selective search는 train에는 사용하지 않고 val1, val2, test images에 사용하였다. ILSVRC images는 크기가 매우 작은 것부터 엄청 큰 것까지 다양하게 분포하고 있기 때문에 각 image를 500 pixels로 resize한 후 selective search를 적용하였다. 그 결과 image 당 평균 2403개의 region proposals가 도출되었다.
+
 # 4.3. Training Data
+
+images와 selective search, N개의 ground-truth boxes로 구성된 boxes를 한 set로 만들었다. N은 각각 $N \in \lbrace 0, 500, 1000 \rbrace$으로 진행하였다.<br>
+R-CNN에서는 train data를 CNN fine-tuning, detector SVM training, bounding-box regressor training에서 사용한다. CNN fine-tuning은 PASCAL에서 했던 것과 동일한 세팅으로 50k SGD iteration만큼 진행하였다. SVM training에서는 모든 ground-truth boxes가 positive examples로 사용되었다. val1에서 무작위로 선별된 5000개의 images에 대해 hard negative mining이 수행되었다. bounding-box regressors도 마찬가지로 val1로 훈련하였다.
 
 # 4.4. Validation and Evaluation
 
+evaluation server에 결과를 제출하기 앞서 val2에 fine-tuning과 bounding-box regression의 효과를 검증해보았다. 모든 hyperparameters는 PASCAL에 사용한 것과 동일하게 설정하였다. 여러 조건에 따라 시험해본 후 val2에서 성능이 가장 좋았던 것을 골라 bounding-box regression을 사용한 것과 사용하지 않은 것을 각각 제출하였다.
+
 # 4.5. Ablation Study
 
+![image](https://user-images.githubusercontent.com/110075956/226911575-69e9114e-d7ea-4611-bd57-407aa357f25c.png)<br>
+Table 4는 training data, fine-tuning, bounding-box regression에 ㅁ따른 결과를 나타낸 것이다. val2에 대한 mAP가 test에 대한 mAP와 매우 비슷한데 이는 val2가 성능을 평가하는데 매우 좋은 indicator인 것을 의미한다. 위 결과를 보면, 우선 val1만을 training data로 사용했을 때는 20.9%의 mAP를 기록하였다. training set을 val1 + train으로 확장시켰을 때는 mAP가 24.1%로 향상되었다. 이 때 N = 500일 때와 N = 1000일 때 차이를 보이지 않았다. fine-tuning과 bounding-box regression을 각각 추가하였을 때 성능이 소폭 향상되었다. 
+
 # 4.6. Relationship to OverFeat
+
+R-CNN과 OverFeat 간에 흥미로운 관계가 하나 있었는데, 만약 selective search region proposals를 regular square regions의 multi-scale pyramid로 대체하고 per-class bounding-box regressors를 single bounding-box regressor로 바꾼다면 system이 매우 유사하다는 것이다. OverFeat은 R-CNN보다 약 9배 가량 빠른데 이는 OverFeat에서는 sliding windows를 warping하지 않아 계산이 훨씬 간단하기 때문이다.
 
 # 5. Semantic Segmentation
 
