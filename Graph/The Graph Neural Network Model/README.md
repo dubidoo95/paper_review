@@ -13,7 +13,22 @@ GNN은 information diffusion mechanism을 사용한다. graph는 graph의 연결
 
 # 2. The Graph Neural Network Model
 
+본 논문에서 사용한 약어들의 의미는 다음과 같다. <br>
+Graph $G$는 $(N, E)$로 나타내고 $N$은 nodes의 집합을, $E$는 edges의 집합을 뜻한다. ne $[n]$은 $n$에 arc로 연결된 nodes를 뜻하며 co $[n]$은 $n$을 꼭지점으로 갖는 arcs의 집합을 뜻한다. node $n$과 edge $(n_1, n_2)$에 붙는 labels는 각각 $l_n \in R^{l_N}$, $l_{(n_1, n_2)} \in R^{l_E}$로 표현된다. $l$은 graph의 모든 labels를 합쳐 만든 vector를 의미한다. vector $y_S$는 $y$에서 $S$에 있는 nodes(혹은 edges)와 관련된 성분을 선택하여 얻은 벡터를 말한다.<br><br>
+graph는 positional graph와 nonpositional graph로 나뉜다. nonpositional graph는 지금까지 설명해온 graph이고 nonpositional graph는 node $n$의 각 이웃에 그것의 위치를 가리키는 integer identifier가 있는 graph이다. 다시 말해 positional graph의 각 node $n$에 대해, injective function $v_n$: ne $[n]\rightarrow \lbrace 1, \dots, \vert N \vert \rbrace$가 존재하며, 각 function은 $n$의 각 이웃 $u$에 position $v_n(u)$를 할당한다.<br><br>
+graphs의 집합을 $G$, 그들의 노드의 하위집합을 $N$이라 할 때 supervised learning framework를 다음과 같이 정의한다.
+$$L = \lbrace (G_i, n_{i,j}, t_{i,j}|, G_i = (N_i, E_i) \in G; n_{i,j} \in N_i; t_{i,j} \in R^m, 1 \leq i \leq p, 1 \leq j \leq q_i \rbrace$$
+여기서 $n_{i,j}$는 집합 $N_i$의 $j$번째 node를, $t_{i,j}$는 $n_{i,j}$에 관련된 target을 의미한다. 
+
 # 2.1. The Model
+
+nodes는 objects 혹은 concepts를, edges는 그들의 관계를 나타낸다. <br>
+![image](https://user-images.githubusercontent.com/110075956/227529079-bac4de56-7156-4bc6-ae77-06967d3b22a1.png)<br>
+Figure 2처럼 state $x_n \in R^s$를 각 node $n$에 붙였다. 그러면 state $x_n$은 $n$으로 표시되는 concept를 포함하고 output $o_n$를 만드는 데 사용될 수 있다. 그리고 $f_w$를 node $n$의 이웃에 대한 독립성을 나타내는 local transition function으로, $g_w$를 output이 어떻게 만들어지는지 나타내는 local output function $g_w$로 정의하였다. $x_n$와 $o_n$은 다음과 같이 표현될 수 있다.
+$$x_n = f_w(l_n, l_{co[n]}, x_{ne[n]}, l_{ne[n]})$$
+$$o_n = g_w(x_n, l_n)$$
+여기서 $l_n, l_{co[n]}, x_{ne[n]}, l_{ne[n]}$은 각각 $n$의 label, edges의 labels, states, nodes의 labels이다. 
+
 
 # 2.2. Computation of the State
 
