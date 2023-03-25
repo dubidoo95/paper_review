@@ -24,11 +24,17 @@ $$L = \lbrace (G_i, n_{i,j}, t_{i,j}|, G_i = (N_i, E_i) \in G; n_{i,j} \in N_i; 
 
 nodes는 objects 혹은 concepts를, edges는 그들의 관계를 나타낸다. <br>
 ![image](https://user-images.githubusercontent.com/110075956/227529079-bac4de56-7156-4bc6-ae77-06967d3b22a1.png)<br>
-Figure 2처럼 state $x_n \in R^s$를 각 node $n$에 붙였다. 그러면 state $x_n$은 $n$으로 표시되는 concept를 포함하고 output $o_n$를 만드는 데 사용될 수 있다. 그리고 $f_w$를 node $n$의 이웃에 대한 독립성을 나타내는 local transition function으로, $g_w$를 output이 어떻게 만들어지는지 나타내는 local output function $g_w$로 정의하였다. $x_n$와 $o_n$은 다음과 같이 표현될 수 있다.
-$$x_n = f_w(l_n, l_{co[n]}, x_{ne[n]}, l_{ne[n]})$$
-$$o_n = g_w(x_n, l_n)$$
-여기서 $l_n, l_{co[n]}, x_{ne[n]}, l_{ne[n]}$은 각각 $n$의 label, edges의 labels, states, nodes의 labels이다. 
-
+Figure 2처럼 state $x_n \in R^s$를 각 node $n$에 붙였다. 그러면 state $x_n$은 $n$으로 표시되는 concept를 포함하고 output $o_n$를 만드는 데 사용될 수 있다. 그리고 $f_w$를 node $n$의 이웃에 대한 독립성을 나타내는 local transition function으로, $g_w$를 output이 어떻게 만들어지는지 나타내는 local output function $g_w$로 정의하였다. $x_n$와 $o_n$은 다음과 같이 표현될 수 있다.<br>
+$x_n = f_w(l_n, l_{co[n]}, x_{ne[n]}, l_{ne[n]})$<br>
+$o_n = g_w(x_n, l_n)$ (Equ. 1)<br>
+여기서 $l_n, l_{co[n]}, x_{ne[n]}, l_{ne[n]}$은 각각 $n$의 label, edges의 labels, states, nodes의 labels이다. 위 식은 undirected graphs를 위해 만들어진 것으로, directed graphs의 경우엔 $d_l$과 같은 새로운 변수가 필요하다. <br><br>
+모든 states, outputs, labels, node labels를 쌓아서 vectors로 만들고 위 식을 다시 쓰면 다음과 같아진다.<br>
+$x = F_w(x, l)$<br>
+$o = G_w(x, l_N)$ (Equ. 2)<br>
+여기서 $F_w$는 global transition function, $G_w$는 global output function이 된다. Banach fixed point theorem에 따르면, 위 식은 $F_w$가 state에 따른 contraction map이라는 점에서 독특한 해를 가진다.<br>
+Equ. 1을 더 살펴보면, 이는 positional과 nonpositional graphs에 모두 적용 가능하다. positional graphs의 경우 $f_w$는 neighbors의 positions를 추가적인 inputs으로 받는다. 실제로 $x_{ne[n]}, l_{co[n]}, l_{ne[n]}$이 neighbors의 positions에 따라 정렬되고 존재하지 않는 neighbors에 대해 특별한 null값으로 padding한다면 쉽게 얻을 수 있다. 반면 nonpositional graphs의 경우, $f_w$를 다음과 같이 대체한다.<br>
+$x_n = \sum_{u \in ne[n]} h_w(l_n, l(n,u), x_u, l_u),    n \in N$ (Equ. 3)<br>
+그리고 $h_w$는 parametric function이라 부르며 이는 positions와 children의 수에 영향을 받지 않는다. 
 
 # 2.2. Computation of the State
 
